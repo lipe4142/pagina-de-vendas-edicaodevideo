@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack de Edição Pro - A Transformação dos Seus Vídeos Começa Agora!</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos Globais e Animações Chave */
+        :root {
+            --glow-size: 400px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #0c0a09; /* Um preto mais profundo */
+        }
+        
+        /* Efeito de Lanterna/Glow no Cursor */
+        .cursor-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--glow-size);
+            height: var(--glow-size);
+            border-radius: 9999px;
+            background: radial-gradient(circle at center, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        /* Barra de Progresso no Topo */
+        #scroll-progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #a855f7, #ec4899, #f59e0b);
+            width: 0%;
+            z-index: 50;
+            transition: width 0.1s;
+        }
+
+        /* Animação de Digitação */
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1em;
+            background-color: #f472b6;
+            animation: blink 0.7s infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Gradiente animado para texto */
+        .animated-gradient {
+            background-size: 200% 200%;
+            animation: gradient-animation 5s ease infinite;
+        }
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Animação de fade-in ao rolar */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Animação de pulso para botões de CTA */
+        .pulse-animation {
+            animation: pulse-effect 2s infinite;
+        }
+        @keyframes pulse-effect {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        /* Efeito de hover para os cartões */
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Slider de Antes e Depois */
+        .comparison-slider {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            border-radius: 0.75rem;
+        }
+        .comparison-slider img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .comparison-slider .img-top {
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+        }
+        .comparison-slider .slider-handle {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background-color: white;
+            cursor: ew-resize;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        .comparison-slider .slider-handle-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            border: 2px solid white;
+            border-radius: 50%;
+            background-color: rgba(0,0,0,0.5);
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            color: white;
+            font-size: 10px;
+        }
+
+        /* Pop-up de Saída */
+        #exit-intent-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        #exit-intent-popup.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .popup-content {
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        #exit-intent-popup.visible .popup-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-stone-950 text-gray-200">
+
+    <!-- Elementos Fixos -->
+    <div id="scroll-progress-bar"></div>
+    <div class="cursor-glow"></div>
+
+    <!-- Seção Principal (Hero) -->
+    <header class="text-center min-h-screen flex flex-col justify-center py-16 px-6 overflow-hidden">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-black uppercase mb-4 reveal">
+                Transforme seus vídeos em
+                <span id="typing-text" class="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 bg-clip-text text-transparent"></span><span class="typing-cursor"></span>
+            </h1>
+            <p class="text-lg md:text-2xl text-gray-400 max-w-2xl mx-auto mb-8 reveal" style="transition-delay: 100ms;">
+                Chega de passar horas editando pra no final o vídeo ficar "ok". Com o Pack de Edição Pro, você cria vídeos com cara de produção de cinema, em minutos. É só arrastar e soltar!
+            </p>
+            <div class="reveal" style="transition-delay: 200ms;">
+                <a href="#comprar" class="inline-block bg-green-500 text-white font-bold text-xl py-4 px-10 rounded-xl shadow-lg shadow-green-500/30 hover:bg-green-600 transition-all duration-300 transform hover:scale-105 pulse-animation">
+                    QUERO TRANSFORMAR MEUS VÍDEOS AGORA!
+                </a>
+                <p class="text-sm text-gray-500 mt-4">Acesso imediato por apenas R$15</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Seção de Transformação com Slider Interativo -->
+    <section class="py-20">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 reveal">A TRANSFORMAÇÃO É REAL. <span class="text-purple-400">VEJA COM SEUS OLHOS.</span></h2>
+            <p class="text-gray-400 mb-12 reveal">Arraste o divisor e sinta o poder do Pack Pro.</p>
+            <div class="reveal">
+                <div id="comparison-container" class="comparison-slider shadow-2xl shadow-purple-900/20 border-2 border-purple-500/30">
+                    <img src="DEPOIS.png" alt="Depois de usar o pack" class="img-bottom">
+                    <img src="ANTES.png" alt="Antes de usar o pack" class="img-top">
+                    <div class="slider-handle">
+                        <div class="slider-handle-icon">◀▶</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Seção de Benefícios -->
+    <section class="py-20 bg-stone-900/50">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 reveal">O que você ganha ao destravar o seu acesso <span class="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">IMEDIATO</span>?</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Benefício 1 -->
+                <div class="bg-stone-900 p-8 rounded-xl shadow-lg reveal card-hover border border-stone-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <h3 class="font-bold text-xl mb-2">Economia de Tempo Absurda</h3>
+                    <p class="text-gray-400">Pare de criar efeitos do zero. Arraste, solte e pronto. Seu tempo vale ouro!</p>
+                </div>
+                <!-- ... outros benefícios ... -->
+                 <div class="bg-stone-900 p-8 rounded-xl shadow-lg reveal card-hover border border-stone-800" style="transition-delay: 100ms;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                    <h3 class="font-bold text-xl mb-2">Qualidade Profissional</h3>
+                    <p class="text-gray-400">Transforme vídeos simples em produções de alto impacto visual.</p>
+                </div>
+                <div class="bg-stone-900 p-8 rounded-xl shadow-lg reveal card-hover border border-stone-800" style="transition-delay: 200ms;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <h3 class="font-bold text-xl mb-2">Extremamente Fácil de Usar</h3>
+                    <p class="text-gray-400">Não precisa ser um expert! Criado para ser intuitivo e rápido.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de CTA e Preço -->
+    <section id="comprar" class="py-20 text-center">
+        <div class="max-w-3xl mx-auto px-6 reveal">
+            <h2 class="text-3xl md:text-5xl font-black mb-4">ACESSO IMEDIATO. TRANSFORMAÇÃO VITALÍCIA.</h2>
+            <p class="text-lg text-gray-400 mb-8">Oferta de lançamento por tempo limitado. Não perca.</p>
+            
+            <div class="bg-stone-900 border-2 border-purple-500 rounded-2xl p-8 max-w-md mx-auto shadow-2xl shadow-purple-500/20">
+                <p class="text-sm text-gray-400 mb-2">PAGAMENTO ÚNICO POR APENAS:</p>
+                <p id="price-counter" class="text-7xl font-black text-white my-4" data-final-price="15">R$ 15</p>
+                
+                <a href="https://pay.kiwify.com.br/yjQEvQ2" target="_blank" class="block w-full bg-green-500 text-white font-bold text-2xl py-4 rounded-xl shadow-lg transition-all duration-300 transform pulse-animation">
+                    COMPRAR AGORA E TRANSFORMAR MEUS VÍDEOS
+                </a>
+                <p class="text-sm text-gray-400 mt-4">Compra segura. Acesso vitalício e imediato!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Garantia -->
+    <section class="py-20">
+        <div class="max-w-4xl mx-auto px-6 flex flex-col md:flex-row items-center gap-8 reveal">
+            <div class="flex-shrink-0">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold mb-2">GARANTIA DE SATISFAÇÃO TOTAL | RISCO ZERO!</h2>
+                <p class="text-gray-400">Temos tanta confiança que o Pack de Edição Pro vai revolucionar seus vídeos que te oferecemos uma **Garantia Incondicional de 7 Dias**. Se por QUALQUER motivo você não ficar 100% satisfeito, é só mandar um e-mail e nós devolvemos todo o seu dinheiro. Sem perguntas, sem burocracia. O risco é todo nosso.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pop-up de Saída -->
+    <div id="exit-intent-popup">
+        <div class="popup-content bg-gradient-to-br from-purple-600 via-pink-600 to-red-500 p-1 rounded-2xl max-w-lg w-11/12 shadow-2xl">
+            <div class="bg-stone-900 p-8 rounded-xl text-center relative">
+                <button id="close-popup" class="absolute top-2 right-4 text-gray-500 hover:text-white text-3xl">&times;</button>
+                <h2 class="text-3xl font-black text-white mb-2">ESPERE! NÃO VÁ AINDA!</h2>
+                <p class="text-gray-300 mb-4">Você está a um passo de transformar seus vídeos. Como um incentivo final, se você comprar AGORA, receberá um **BÔNUS SURPRESA** exclusivo!</p>
+                <p class="text-lg text-yellow-400 font-bold mb-6">É a sua última chance de garantir o pack + bônus!</p>
+                <a href="https://pay.kiwify.com.br/yjQEvQ2" target="_blank" class="block w-full bg-green-500 text-white font-bold text-2xl py-4 rounded-xl shadow-lg transition-all duration-300 transform pulse-animation">
+                    SIM, QUERO O BÔNUS!
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- EFEITO DE LANTERNA NO CURSOR ---
+            const glow = document.querySelector('.cursor-glow');
+            document.addEventListener('mousemove', (e) => {
+                glow.style.left = `${e.clientX}px`;
+                glow.style.top = `${e.clientY}px`;
+            });
+
+            // --- BARRA DE PROGRESSO DE SCROLL ---
+            const progressBar = document.getElementById('scroll-progress-bar');
+            window.addEventListener('scroll', () => {
+                const totalHeight = document.body.scrollHeight - window.innerHeight;
+                const progress = (window.pageYOffset / totalHeight) * 100;
+                progressBar.style.width = `${progress}%`;
+            });
+
+            // --- ANIMAÇÃO DE DIGITAÇÃO NA HEADLINE ---
+            const typingTextElement = document.getElementById('typing-text');
+            const words = ["VÍDEOS INCRÍVEIS", "EM MINUTOS", "QUALIDADE DE CINEMA", "MAIS ENGAJAMENTO"];
+            let wordIndex = 0;
+            let letterIndex = 0;
+            let currentWord = '';
+            let isDeleting = false;
+
+            function type() {
+                const fullWord = words[wordIndex];
+                if (isDeleting) {
+                    currentWord = fullWord.substring(0, letterIndex - 1);
+                    letterIndex--;
+                } else {
+                    currentWord = fullWord.substring(0, letterIndex + 1);
+                    letterIndex++;
+                }
+
+                typingTextElement.innerHTML = currentWord;
+
+                let typeSpeed = 150;
+                if (isDeleting) {
+                    typeSpeed /= 2;
+                }
+
+                if (!isDeleting && currentWord === fullWord) {
+                    typeSpeed = 2000;
+                    isDeleting = true;
+                } else if (isDeleting && currentWord === '') {
+                    isDeleting = false;
+                    wordIndex = (wordIndex + 1) % words.length;
+                    typeSpeed = 500;
+                }
+
+                setTimeout(type, typeSpeed);
+            }
+            type();
+
+            // --- SLIDER DE COMPARAÇÃO "ANTES E DEPOIS" ---
+            const container = document.getElementById('comparison-container');
+            if(container) {
+                const slider = container.querySelector('.slider-handle');
+                const topImg = container.querySelector('.img-top');
+                let isDragging = false;
+
+                const startDrag = (e) => { isDragging = true; };
+                const stopDrag = () => { isDragging = false; };
+                const onDrag = (e) => {
+                    if (!isDragging) return;
+                    const rect = container.getBoundingClientRect();
+                    let x = (e.clientX || e.touches[0].clientX) - rect.left;
+                    x = Math.max(0, Math.min(x, rect.width));
+                    const percent = (x / rect.width) * 100;
+                    slider.style.left = `${percent}%`;
+                    topImg.style.clipPath = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
+                };
+
+                slider.addEventListener('mousedown', startDrag);
+                slider.addEventListener('touchstart', startDrag);
+                window.addEventListener('mouseup', stopDrag);
+                window.addEventListener('touchend', stopDrag);
+                window.addEventListener('mousemove', onDrag);
+                window.addEventListener('touchmove', onDrag);
+            }
+
+            // --- ANIMAÇÃO DE CONTAGEM DO PREÇO ---
+            const priceCounter = document.getElementById('price-counter');
+            const animatePrice = (elem) => {
+                const finalPrice = parseInt(elem.dataset.finalPrice, 10);
+                let currentPrice = 0;
+                const increment = Math.ceil(finalPrice / 20); // Anima em 20 passos
+                
+                const interval = setInterval(() => {
+                    currentPrice += increment;
+                    if (currentPrice >= finalPrice) {
+                        currentPrice = finalPrice;
+                        clearInterval(interval);
+                    }
+                    elem.textContent = `R$ ${currentPrice}`;
+                }, 50); // Velocidade da animação
+            };
+
+            // --- OBSERVER PARA ANIMAÇÕES AO ROLAR ---
+            const revealElements = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        if (entry.target.id === 'price-counter') {
+                            animatePrice(entry.target);
+                            observer.unobserve(entry.target);
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            revealElements.forEach(element => {
+                observer.observe(element);
+            });
+
+            // --- POP-UP DE SAÍDA (EXIT-INTENT) ---
+            const popup = document.getElementById('exit-intent-popup');
+            const closePopupButton = document.getElementById('close-popup');
+            let popupShown = false;
+
+            document.addEventListener('mouseout', (e) => {
+                // Se o mouse sair pela parte de cima da janela e o popup não foi mostrado ainda
+                if (e.clientY <= 0 && !popupShown) {
+                    popup.classList.add('visible');
+                    popupShown = true;
+                }
+            });
+            
+            closePopupButton.addEventListener('click', () => {
+                popup.classList.remove('visible');
+            });
+        });
+    </script>
+</body>
+</html>
